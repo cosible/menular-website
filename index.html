@@ -3,7 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menular - Eat like a local, while traveling abroad</title>
+<title>Menular | Discover what's really on the menu</title>
+<meta name="description" content="Menular explains foreign-language menus the way a local would. Scan a menu, see every dish explained, and show staff your order in their language.">
+<link rel="canonical" href="https://www.menular.com/">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#f7f1e7">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Menular">
+<meta property="og:title" content="Menular | Discover what's really on the menu">
+<meta property="og:description" content="Menular explains foreign-language menus the way a local would. Scan a menu, see every dish explained, and show staff your order in their language.">
+<meta property="og:url" content="https://www.menular.com/">
+<meta property="og:image" content="https://www.menular.com/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="426">
+<meta property="og:image:alt" content="The Menular logo above the tagline: Discover what's really on the menu">
+<meta name="twitter:card" content="summary_large_image">
+<script>
+  /* Decide before first paint whether the logo intro plays, so the hero never
+     flashes. Without JavaScript, or with reduced motion, the page keeps the
+     static logo and visible tagline. */
+  (function () {
+    var root = document.documentElement;
+    root.classList.add('js');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !window.fetch || !window.Promise) {
+      return;
+    }
+    root.classList.add('intro');
+
+    /* Start both downloads now, in parallel, instead of after the page parses. */
+    var intro = window.menularIntro = { started: false };
+    intro.data = fetch('/assets/animation/menular-logo-intro.json').then(function (r) {
+      if (!r.ok) {
+        throw new Error('Animation HTTP ' + r.status);
+      }
+      return r.json();
+    });
+    intro.lib = new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = '/assets/js/lottie_light.min.js';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+    intro.data.catch(function () {});
+    intro.lib.catch(function () {});
+
+    /* If the animation is not playing within 4 seconds, show the static logo. */
+    setTimeout(function () {
+      if (!intro.started) {
+        root.classList.remove('intro');
+      }
+    }, 4000);
+  })();
+</script>
+<script src="/assets/js/home.js" defer></script>
+<link rel="stylesheet" href="/assets/css/footer.css">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -19,672 +76,292 @@
     margin: 0 auto;
   }
 
-  /* HERO — terracotta bg, logo as-is with rounded corners as a badge */
+  /* HERO: cream, like the app's onboarding welcome screen */
   .hero {
-    background: #c2603f;
-    padding: 52px 28px 52px;
+    padding: 64px 24px 40px;
     text-align: center;
   }
 
+  /* Space for the logo is reserved at the animation's own aspect ratio
+     (1913 x 623), so nothing moves when it loads or falls back. */
   .hero-logo {
+    position: relative;
     width: 340px;
-    max-width: 80%;
-    height: auto;
-    display: block;
-    margin: 0 auto 36px;
+    max-width: 100%;
+    aspect-ratio: 1913 / 623;
+    margin: 0 auto;
   }
 
-  .hero-headline {
-    font-size: 32px;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.18;
-    margin-bottom: 18px;
-    letter-spacing: -0.4px;
-    max-width: 320px;
-    margin-left: auto;
-    margin-right: auto;
+  .hero-logo-static {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: auto;
+    transform: translateY(-50%);
+    border-radius: 8px;
+  }
+
+  .hero-logo-anim {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-tagline {
+    max-width: 11em;
+    margin: 14px auto 0;
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: -0.2px;
+    color: #5a4f47;
+    text-wrap: balance;
   }
 
   .hero-sub {
-    font-size: 19px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.95);
-    line-height: 1.65;
-    width: 100%;
-    max-width: 560px;
-    margin: 18px auto 0;
-  }
-
-  /* DIVIDERS */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 20px;
-    margin: 36px 0;
-  }
-  .divider-line {
-    flex: 1;
-    height: 2px;
-    background: rgba(43,37,32,0.12);
-    border-radius: 2px;
-  }
-  .divider-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #c2603f;
-    opacity: 0.5;
-    flex-shrink: 0;
-  }
-
-  .dark-divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 20px;
-    margin: 36px 0;
-  }
-  .dark-divider-line {
-    flex: 1;
-    height: 2px;
-    background: rgba(247,241,231,0.12);
-    border-radius: 2px;
-  }
-  .dark-divider-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #c2603f;
-    opacity: 0.6;
-    flex-shrink: 0;
-  }
-
-  /* SECTIONS */
-  .section {
-    padding: 44px 24px 8px;
-  }
-
-  .section-eyebrow {
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #c2603f;
-    margin-bottom: 10px;
-  }
-
-  .section-title {
-    font-size: 24px;
-    font-weight: 800;
-    color: #2b2520;
-    line-height: 1.25;
-    margin-bottom: 14px;
-    letter-spacing: -0.2px;
-  }
-
-  .section-body {
+    max-width: 460px;
+    margin: 22px auto 0;
     font-size: 18px;
-    color: #5a4f47;
-    line-height: 1.65;
-    margin-bottom: 28px;
-  }
-
-  /* PROBLEM ITEMS */
-  .problem-list {
-    padding: 0 24px 44px;
-  }
-
-  .problem-item {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-    padding: 20px 0;
-    border-bottom: 1px solid rgba(43,37,32,0.09);
-  }
-  .problem-item:last-child {
-    border-bottom: none;
-  }
-
-  .problem-accent {
-    width: 3px;
-    min-height: 52px;
-    background: #c2603f;
-    border-radius: 2px;
-    flex-shrink: 0;
-    margin-top: 2px;
-    opacity: 0.75;
-  }
-
-  .problem-content { flex: 1; }
-
-  .problem-label {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #c2603f;
-    margin-bottom: 6px;
-  }
-
-  .problem-text {
-    font-size: 18px;
-    color: #2b2520;
     line-height: 1.6;
+    color: #5a4f47;
   }
 
-  /* HOW IT WORKS — steps with tinted background callouts */
-  .steps-wrap {
-    padding: 0 24px 44px;
+  /* App Store badge: Apple artwork shown as supplied, at least 40px tall,
+     with clear space of one quarter of its height on every side. */
+  .store-badge {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 12px;
   }
 
-  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .store-badge img {
+    display: block;
+    height: 48px;
+    width: auto;
+  }
 
-  .step {
+  .hero-coming {
+    font-size: 17px;
+    font-weight: 600;
+    color: #2b2520;
+  }
+
+  .hero-android {
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(43,37,32,0.68);
+  }
+
+  /* Intro state, set by the head script only when the animation will play. */
+  .intro .hero-logo-static {
+    visibility: hidden;
+  }
+
+  .intro .hero-tagline {
+    opacity: 0;
+    transform: translateY(22px);
+    /* Fitted to React Native's default Animated.timing easing used in the app. */
+    transition:
+      opacity 900ms cubic-bezier(0.39, 0.06, 0.61, 0.94),
+      transform 900ms cubic-bezier(0.39, 0.06, 0.61, 0.94);
+  }
+
+  .intro .hero.is-revealed .hero-tagline {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* SCREENSHOT GALLERY: native horizontal scroll with snap points */
+  .gallery {
+    position: relative;
+    padding-top: 8px;
+  }
+
+  .gallery-track {
+    --gap: 16px;
+    --pad: 24px;
     display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    background: #F1DED5;
-    border-radius: 16px;
-    padding: 18px 20px;
+    gap: var(--gap);
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--pad);
+    padding: 8px var(--pad) 32px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(43,37,32,0.2) transparent;
   }
 
-  .step-number {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #c2603f;
-    color: #fff;
-    font-size: 16px;
-    font-weight: 700;
+  .gallery-track:focus-visible {
+    outline: 2px solid #c2603f;
+    outline-offset: -2px;
+    border-radius: 12px;
+  }
+
+  /* Phones: one screenshot, with the next one peeking in. */
+  .gallery-item {
+    flex: 0 0 72%;
+    scroll-snap-align: start;
+  }
+
+  .gallery-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 18px;
+    box-shadow: 0 2px 6px rgba(43,37,32,0.08), 0 12px 28px rgba(43,37,32,0.14);
+    background: #efe6d9;
+  }
+
+  .gallery-controls {
+    display: none;
+  }
+
+  /* Tablets: about two. */
+  @media (min-width: 600px) {
+    .gallery-track { --gap: 20px; --pad: 32px; }
+    .gallery-item { flex-basis: calc((100% - var(--gap)) / 2.2); }
+  }
+
+  /* Wide screens: four, with arrow buttons in the side gutters. */
+  @media (min-width: 1024px) {
+    .gallery-track { --pad: 64px; }
+    .gallery-item { flex-basis: calc((100% - 3 * var(--gap)) / 4); }
+
+    .js .gallery-track { scrollbar-width: none; }
+    .js .gallery-track::-webkit-scrollbar { display: none; }
+
+    .js .gallery-controls { display: block; }
+  }
+
+  .gallery-btn {
+    position: absolute;
+    top: calc(50% - 8px);
+    width: 44px;
+    height: 44px;
+    margin-top: -22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .step-text { flex: 1; padding-top: 4px; }
-
-  .step-verb {
-    font-size: 18px;
-    font-weight: 700;
-    color: #2b2520;
-    margin-bottom: 4px;
-  }
-
-  .step-desc {
-    font-size: 17px;
-    color: #5a4f47;
-    line-height: 1.55;
-  }
-
-  /* DARK SCREENSHOTS BG */
-  .screenshots-bg {
-    background: #2b2520;
-    padding-bottom: 12px;
-  }
-
-  .screenshots-section {
-    padding: 44px 24px 8px;
-  }
-
-  .screenshots-section .section-eyebrow {
-    color: rgba(194,96,63,0.9);
-  }
-
-  .screenshots-section .section-title {
-    color: #f7f1e7;
-  }
-
-  .screenshots-section .section-body {
-    color: rgba(247,241,231,0.65);
-    margin-bottom: 0;
-  }
-
-  /* Screenshot block: stacked on mobile, side-by-side on wider screens */
-  .screenshot-block {
-    padding: 0 24px;
-    margin-bottom: 12px;
-  }
-
-  .screenshot-inner {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 640px;
-    margin: 0 auto;
-  }
-
-  /* On wider screens, caption left, screenshot right */
-  @media (min-width: 560px) {
-    .screenshot-inner {
-      flex-direction: row;
-      align-items: stretch;
-      justify-content: center;
-      gap: 24px;
-    }
-    .screenshot-caption-card {
-      flex: 1;
-      max-width: 320px;
-      min-width: 0;
-    }
-    .screenshot-wrap {
-      flex: 0 0 auto;
-      width: 100%;
-      max-width: 300px;
-      min-width: 0;
-    }
-  }
-
-  .screenshot-caption-card {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.11);
-    border-radius: 5px;
-    padding: 18px 20px;
-  }
-
-  .caption-eyebrow {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    line-height: 1.6;
-    color: #c2603f;
-    margin-bottom: 6px;
-    opacity: 0.9;
-  }
-
-  .caption-title {
-    font-size: 19px;
-    font-weight: 700;
-    color: #f7f1e7;
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-
-  .caption-body {
-    font-size: 16px;
-    color: rgba(247,241,231,0.62);
-    line-height: 1.6;
-  }
-
-  .caption-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .caption-list li {
-    font-size: 16px;
-    color: rgba(248, 246, 244, 0.62);
-    line-height: 1.5;
-    padding-left: 16px;
-    position: relative;
-  }
-
-  .caption-list li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 8px;
-    width: 5px;
-    height: 5px;
+    border: none;
     border-radius: 50%;
-    background: #c2603f;
-  }
-
-  .screenshot-wrap {
-    border-radius: 5px;
-    overflow: hidden;
-    box-shadow: 0 20px 52px rgba(0,0,0,0.45);
-  }
-
-  .screenshot-wrap img {
-    width: 100%;
-    display: block;
-  }
-
-  /* STORY */
-  .story-section {
-    padding: 80px 24px;
-    max-width: 560px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .story-title {
-    font-size: 30px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    background: #fff;
     color: #c2603f;
-    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(43,37,32,0.16);
+    cursor: pointer;
+    transition: opacity 150ms ease, transform 150ms ease;
   }
 
-  .story-body {
-    font-size: 16px;
-    color: #5a4f47;
-    line-height: 1.65;
+  .gallery-prev { left: 10px; }
+  .gallery-next { right: 10px; }
+
+  .gallery-btn:hover:not(:disabled) { transform: scale(1.06); }
+
+  .gallery-btn:focus-visible {
+    outline: 2px solid #c2603f;
+    outline-offset: 3px;
   }
 
-  .story-body-first {
-    margin-bottom: 20px;
+  .gallery-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+    box-shadow: none;
   }
 
-  .story-highlight {
-    font-weight: 700;
-  }
-
-  /* CLOSING */
-  .closing {
-    background: #c2603f;
-    padding: 52px 24px;
+  /* LEARN MORE */
+  .learn-more {
+    padding: 8px 24px 24px;
     text-align: center;
   }
 
-  .closing-logo {
-    width: 280px;
-    max-width: 70%;
-    height: auto;
-    display: block;
-    margin: 0 auto 28px;
-  }
-
-  .closing-coming {
-    font-size: 28px;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.2;
-    letter-spacing: -0.3px;
-    margin-bottom: 8px;
-  }
-
-  .closing-platform {
-    font-size: 16px;
-    color: rgba(255,255,255,0.65);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  .learn-more a {
+    font-size: 18px;
     font-weight: 600;
-  }
-
-  /* FOOTER */
-  .site-footer {
-    padding: 8px 24px 40px;
-    text-align: center;
-  }
-
-  .footer-disclaimer {
-    font-size: 13px;
-    font-style: italic;
-    color: rgba(43,37,32,0.5);
-    line-height: 1.6;
-    max-width: 420px;
-    margin: 0 auto;
-  }
-
-  .footer-disclaimer a {
     color: #c2603f;
-    font-style: normal;
     text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1.5px;
+    border-radius: 3px;
+  }
+
+  .learn-more a:hover {
+    text-decoration-thickness: 2.5px;
+  }
+
+  .learn-more a:focus-visible {
+    outline: 2px solid #c2603f;
+    outline-offset: 4px;
+  }
+
+  @media (max-width: 480px) {
+    .hero { padding: 48px 20px 32px; }
+    .hero-logo { width: 260px; }
+    .hero-tagline { font-size: 26px; }
+    .hero-sub { font-size: 17px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-btn { transition: none; }
   }
 </style>
 </head>
 <body>
 <div class="page-wrap">
 
-<!-- HERO — terracotta with logo as badge -->
-<div class="hero">
-  <img class="hero-logo" src="assets/logo.svg" alt="Menular">
-  <h1 class="hero-headline">Eat like a local, while traveling abroad</h1>
-  <p class="hero-sub">Discover foreign language menus the way a local would describe them, and leave your translation apps at home</p>
-</div>
-
-<!-- PROBLEM -->
-<div class="section">
-  <p class="section-eyebrow">The Problem</p>
-  <h2 class="section-title">Apps translate menu text, but they don't help you order with confidence</h2>
-  <p class="section-body">Millions of travelers eat at restaurants abroad with menus they cannot read. Translation apps convert the words but don't help you discover what's really on the menu and order with confidence.</p>
-</div>
-
-<div class="problem-list">
-  <div class="problem-item">
-    <div class="problem-accent"></div>
-    <div class="problem-content">
-      <p class="problem-label">Lost in translation</p>
-      <p class="problem-text">Specialty and regional dishes often yield strange or meaningless translations, turning the most exciting items on the menu into the most confusing ones.</p>
-    </div>
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-logo" role="img" aria-label="Menular">
+    <img class="hero-logo-static" src="/assets/logo.svg" width="2249" height="560" alt="">
+    <div class="hero-logo-anim"></div>
   </div>
-  <div class="problem-item">
-    <div class="problem-accent"></div>
-    <div class="problem-content">
-      <p class="problem-label">No real context</p>
-      <p class="problem-text">Without context for ingredients, taste, and what makes a dish worth trying, your order is guesswork. </p>
-    </div>
+  <h1 class="hero-tagline">Discover what's really on the menu</h1>
+  <p class="hero-sub">Scan a foreign-language menu, see every dish explained, and show staff your order in their language.</p>
+  <div class="store-badge">
+    <img src="/assets/badges/app-store-badge.svg" width="144" height="48" alt="Download on the App Store">
   </div>
-  <div class="problem-item">
-    <div class="problem-accent"></div>
-    <div class="problem-content">
-      <p class="problem-label">No app for that</p>
-      <p class="problem-text">There is no existing app that guides a traveler from an unreadable foreign menu to a confident, placed order.</p>
-    </div>
-  </div>
-</div>
+  <p class="hero-coming">Coming soon!</p>
+  <p class="hero-android">An Android version is on the way.</p>
+</header>
 
-<!-- DIVIDER -->
-<div class="divider">
-  <div class="divider-line"></div>
-  <div class="divider-dot"></div>
-  <div class="divider-line"></div>
-</div>
-
-<!-- HOW IT WORKS -->
-<div class="section">
-  <p class="section-eyebrow">How It Works</p>
-  <!-- <h2 class="section-title">Menular guides travelers from an unreadable foreign menu to placing an order with confidence</h2> -->
-  <h2 class="section-title">From an unreadable menu to a confident order, in these steps...</h2>
-</div>
-
-<div class="steps-wrap">
-  <div class="steps">
-    <div class="step">
-      <div class="step-number">1</div>
-      <div class="step-text">
-        <p class="step-verb">Scan</p>
-        <p class="step-desc">Point your camera at any restaurant or bar menu and let Menular do the reading</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-number">2</div>
-      <div class="step-text">
-        <p class="step-verb">Discover</p>
-        <p class="step-desc">Every dish and drink explained from ingredients and taste to preparation and what makes it worth ordering</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-number">3</div>
-      <div class="step-text">
-        <p class="step-verb">Build</p>
-        <p class="step-desc">Add what looks good to your order the way you'd shop online. No guessing required</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-number">4</div>
-      <div class="step-text">
-        <p class="step-verb">Place Order</p>
-        <p class="step-desc">Show your order to restaurant staff in their language, and order without saying a word</p>
-      </div>
-    </div>
-  </div>
-</div>
+<main>
 
 <!-- SCREENSHOTS -->
-<div class="screenshots-bg">
-
-  <div class="screenshots-section">
-    <p class="section-eyebrow">See It In Action</p>
-    <h2 class="section-title">Discover what's really on the menu!</h2>
+<section class="gallery" aria-label="App screenshots">
+  <ul class="gallery-track" tabindex="0">
+    <li class="gallery-item"><img src="/assets/app-screens/01-home.jpg" width="750" height="1630" alt="Discover what's really on the menu. Scan a new menu, or pick up right where you left off."></li>
+    <li class="gallery-item"><img src="/assets/app-screens/02-menu-builder.jpg" width="750" height="1630" alt="Dishes explained in detail, with local context. Photos, descriptions, taste tags, and prices in your own currency."></li>
+    <li class="gallery-item"><img src="/assets/app-screens/03-dish-detail.jpg" width="750" height="1630" loading="lazy" alt="Know exactly what you're ordering. See dish or beverage details, and understand what makes it worth trying."></li>
+    <li class="gallery-item"><img src="/assets/app-screens/04-translated-order.jpg" width="750" height="1630" loading="lazy" alt="Order without saying a word. Staff read your order on screen. No live translation needed."></li>
+    <li class="gallery-item"><img src="/assets/app-screens/05-ask-staff-questions.jpg" width="750" height="1630" loading="lazy" alt="Ask before you order. Staff tap their answers, right on your screen."></li>
+    <li class="gallery-item"><img src="/assets/app-screens/06-filter.jpg" width="750" height="1630" loading="lazy" alt="Find the dishes that suit you. Narrow any menu by dietary need, spice level, or taste profile."></li>
+    <li class="gallery-item"><img src="/assets/app-screens/07-learn.jpg" width="750" height="1630" loading="lazy" alt="Learn the menu language. Everything you order becomes part of your own study guide, no textbook required."></li>
+  </ul>
+  <div class="gallery-controls">
+    <button type="button" class="gallery-btn gallery-prev" aria-label="Previous screenshots" disabled>
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button type="button" class="gallery-btn gallery-next" aria-label="Next screenshots">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </div>
+</section>
 
-  <div class="dark-divider" style="margin-top: 28px;">
-    <div class="dark-divider-line"></div>
-    <div class="dark-divider-dot"></div>
-    <div class="dark-divider-line"></div>
-  </div>
-
-  <div class="screenshot-block">
-    <div class="screenshot-inner">
-      <div class="screenshot-caption-card">
-        <p class="caption-eyebrow">Home Screen</p>
-        <p class="caption-title">Your local, travel companion</p>
-        <ul class="caption-list">
-          <li>The home screen lets you quickly discover a new menu, or revisit past favorites</li>
-        </ul>
-      </div>
-      <div class="screenshot-wrap">
-        <img src="assets/home-screen.png" alt="Menular Home Screen">
-      </div>
-    </div>
-  </div>
-
-  <div class="dark-divider">
-    <div class="dark-divider-line"></div>
-    <div class="dark-divider-dot"></div>
-    <div class="dark-divider-line"></div>
-  </div>
-
-  <div class="screenshot-block">
-    <div class="screenshot-inner">
-      <div class="screenshot-caption-card">
-        <p class="caption-eyebrow">Dish Details</p>
-        <p class="caption-title">Discover a dish or beverage in more detail</p>
-        <ul class="caption-list">
-          <li>Every dish (and beverage) has a photo, English name, and the original menu name with pronunciation</li>
-          <li>Short description, taste tags, and cultural context tell you what to expect before you order</li>
-          <li>Price shown in local currency and USD</li>
-        </ul>
-      </div>
-      <div class="screenshot-wrap">
-        <img src="assets/dish-details.png" alt="Dish Details">
-      </div>
-    </div>
-  </div>
-
-  <div class="dark-divider">
-    <div class="dark-divider-line"></div>
-    <div class="dark-divider-dot"></div>
-    <div class="dark-divider-line"></div>
-  </div>
-
-  <div class="screenshot-block">
-    <div class="screenshot-inner">
-      <div class="screenshot-caption-card">
-        <p class="caption-eyebrow">Learn More</p>
-        <p class="caption-title">Gain deeper insights on any dish or beverage</p>
-        <ul class="caption-list">
-          <li>Full ingredient list so you know exactly what is in it</li>
-          <li>Context on what makes the dish special, and why locals love it</li>
-          <li>Language notes & pronunciation, perfect for travelers learning the local language</li>
-        </ul>
-      </div>
-      <div class="screenshot-wrap">
-        <img src="assets/learn-more.png" alt="Learn More">
-      </div>
-    </div>
-  </div>
-
-  <div class="dark-divider">
-    <div class="dark-divider-line"></div>
-    <div class="dark-divider-dot"></div>
-    <div class="dark-divider-line"></div>
-  </div>
-
-  <div class="screenshot-block">
-    <div class="screenshot-inner">
-      <div class="screenshot-caption-card">
-        <p class="caption-eyebrow">Ask Staff</p>
-        <p class="caption-title">Prepare questions to ask staff when placing your order</p>
-        <ul class="caption-list">
-          <li>Create your own yes / no questions using our question templates</li>
-          <li>Ask about allergens, spice level, preparation, or anything else that matters to you</li>
-          <li>Menular translates your questions allowing staff to answer on the spot when you place your order.</li>
-        </ul>
-      </div>
-      <div class="screenshot-wrap">
-        <img src="assets/ask-staff.png" alt="Ask Staff">
-      </div>
-    </div>
-  </div>
-
-  <div class="dark-divider">
-    <div class="dark-divider-line"></div>
-    <div class="dark-divider-dot"></div>
-    <div class="dark-divider-line"></div>
-  </div>
-
-  <div class="screenshot-block">
-    <div class="screenshot-inner">
-      <div class="screenshot-caption-card">
-        <p class="caption-eyebrow">Order Summary</p>
-        <p class="caption-title">Build your order like a food ordering app</p>
-        <ul class="caption-list">
-          <li>Add dishes & beverages to your order</li>
-          <li>Change quantities, sizes, or portions for your meal</li>
-          <li>Preview the questions that will be asked to staff when placing your order</li>
-        </ul>
-      </div>
-      <div class="screenshot-wrap">
-        <img src="assets/order-summary.png" alt="Order Summary">
-      </div>
-    </div>
-  </div>
-
-  <div class="dark-divider">
-    <div class="dark-divider-line"></div>
-    <div class="dark-divider-dot"></div>
-    <div class="dark-divider-line"></div>
-  </div>
-
-  <div class="screenshot-block">
-    <div class="screenshot-inner">
-      <div class="screenshot-caption-card">
-        <p class="caption-eyebrow">Translated Order for Staff</p>
-        <p class="caption-title">Order without saying a word</p>
-        <ul class="caption-list">
-          <li>Show staff the order translated in their language</li>
-          <li>Staff can answer quick yes/no questions on the spot</li>
-          <li>Switch between the translated order and your native language to check responses</li>
-          <li>Place your order without saying a word (no need for live translations)</li>
-          <li>Language learners can tap "learn" to practice the language and speak their order</li>
-        </ul>
-      </div>
-      <div class="screenshot-wrap">
-        <img src="assets/translated-order.png" alt="Translated Order for Staff">
-      </div>
-    </div>
-  </div>
-
-  <div style="height: 44px;"></div>
-
+<!-- LEARN MORE -->
+<div class="learn-more">
+  <a href="/about">Learn more about Menular</a>
 </div>
 
-<!-- STORY -->
-<div class="story-section">
-  <p class="story-title">The Menular Story</p>
-  <p class="story-body story-body-first">Menular comes from <span class="story-highlight">menu + vernacular, the local language of food and culture</span>. The best way to discover what's on a menu is to hear it the way a local would describe it. That idea lies at the heart of Menular.</p>
-  <p class="story-body">I'm Claudio, and my vision for Menular began during an extended trip to China where I struggled to order confidently in local restaurants. I speak Mandarin well enough to hold a conversation, but still couldn't experience the true depth of local cuisine in the places I visited. Menular exists to change that, for travelers everywhere!</p>
-</div>
-
-<!-- CLOSING -->
-<div class="closing">
-  <img class="closing-logo" src="assets/logo.svg" alt="Menular">
-  <p class="closing-coming">Coming soon to iOS!</p>
-</div>
+</main>
 
 <!-- FOOTER -->
 <footer class="site-footer">
-  <p class="footer-disclaimer">Use of the Menular app is governed by our <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a>.</p>
+  <nav class="footer-links" aria-label="Footer">
+    <span class="footer-group"><a href="/about">About</a><span class="footer-sep" aria-hidden="true">|</span><a href="mailto:support@cosible.com">Support</a></span>
+    <span class="footer-sep footer-sep-mid" aria-hidden="true">|</span>
+    <span class="footer-group"><a href="/terms-of-service">Terms of Service</a><span class="footer-sep" aria-hidden="true">|</span><a href="/privacy-policy">Privacy Policy</a></span>
+  </nav>
+  <p class="footer-copy">&copy; 2026 Cosible LLC</p>
 </footer>
 
 </div><!-- end page-wrap -->

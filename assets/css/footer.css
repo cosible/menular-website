@@ -1,0 +1,54 @@
+/* Shared footer, linked from every page so it stays identical everywhere. */
+.site-footer {
+  padding: 32px 24px 44px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 4px 0;
+}
+
+.footer-group {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.footer-sep {
+  color: rgba(43,37,32,0.3);
+  padding: 0 10px;
+}
+
+.footer-links a {
+  color: #c2603f;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 3px;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-links a:focus-visible {
+  outline: 2px solid #c2603f;
+  outline-offset: 3px;
+}
+
+.footer-copy {
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(43,37,32,0.68);
+}
+
+/* On narrow phones, break into two tidy rows instead of wrapping mid-list. */
+@media (max-width: 420px) {
+  .footer-links { flex-direction: column; align-items: center; }
+  .footer-sep-mid { display: none; }
+}
