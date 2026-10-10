@@ -299,38 +299,6 @@
     transition: transform .8s var(--ease), opacity .6s ease;
   }
 
-  .spot-arrow {
-    position: absolute;
-    top: calc(50% - 8px);
-    z-index: 1;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    margin-top: -24px;
-    border: 1px solid rgba(109,46,25,.18);
-    border-radius: 50%;
-    background: #f7f1e7;
-    color: #c2603f;
-    box-shadow: 0 8px 20px -8px rgba(109,46,25,.35);
-    cursor: pointer;
-    transition: opacity .2s ease;
-  }
-
-  .spot-prev { left: calc(50% - (var(--card-w) / 2 + 72px)); }
-  .spot-next { right: calc(50% - (var(--card-w) / 2 + 72px)); }
-
-  .spot-arrow:disabled {
-    opacity: .35;
-    cursor: default;
-  }
-
-  .spot-arrow:focus-visible {
-    outline: 2px solid #6D2E19;
-    outline-offset: 3px;
-  }
-
   .spot-dots {
     display: none;
     justify-content: center;
@@ -380,10 +348,6 @@
     .how-head {
       max-width: calc(1200px + 64px);
       padding: 0 32px;
-    }
-
-    .how.is-ready .spot-arrow {
-      display: flex;
     }
   }
 
@@ -522,12 +486,6 @@
       <div class="spot-slot"><div class="spot-card"><img src="/assets/app-screens/06-filter.jpg" width="750" height="1630" loading="lazy" alt="Find the dishes that suit you. Narrow any menu by dietary need, spice level, or taste profile."></div></div>
       <div class="spot-slot"><div class="spot-card"><img src="/assets/app-screens/07-learn.jpg" width="750" height="1630" loading="lazy" alt="Learn the menu language. Everything you order becomes part of your own study guide, no textbook required."></div></div>
     </div>
-    <button type="button" class="spot-arrow spot-prev" aria-label="Previous screenshot">
-      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <button type="button" class="spot-arrow spot-next" aria-label="Next screenshot">
-      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
   </div>
 
   <div class="spot-dots">

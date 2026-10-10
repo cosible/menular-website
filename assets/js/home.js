@@ -107,8 +107,6 @@
 
     var slots = Array.prototype.slice.call(strip.children);
     var dots = Array.prototype.slice.call(section.querySelectorAll('.spot-dot'));
-    var prev = section.querySelector('.spot-prev');
-    var next = section.querySelector('.spot-next');
     var last = slots.length - 1;
     var active = -1;
     var target = null;
@@ -141,7 +139,7 @@
       strip.scrollTo({ left: centerLeft(i), behavior: scrollBehavior });
     }
 
-    /* Step from where a scroll in progress is heading, so repeated presses
+    /* Step from where a scroll in progress is heading, so repeated key presses
        move one card each instead of repeating the same card. */
     function step(direction) {
       go((target !== null ? target : active) + direction);
@@ -163,25 +161,6 @@
           dot.removeAttribute('aria-current');
         }
       });
-
-      if (prev && next) {
-        /* Enable first, then move focus off a button that is about to be
-           disabled, so keyboard users are not dropped back to the page. */
-        var focused = document.activeElement;
-        if (i > 0) {
-          prev.disabled = false;
-        }
-        if (i < last) {
-          next.disabled = false;
-        }
-        if (i === 0 && focused === prev) {
-          next.focus();
-        } else if (i === last && focused === next) {
-          prev.focus();
-        }
-        prev.disabled = i === 0;
-        next.disabled = i === last;
-      }
     }
 
     function update() {
@@ -225,11 +204,6 @@
         go(k);
       });
     });
-
-    if (prev && next) {
-      prev.addEventListener('click', function () { step(-1); });
-      next.addEventListener('click', function () { step(1); });
-    }
 
     section.classList.add('is-ready');
     update();
