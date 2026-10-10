@@ -1,19 +1,19 @@
-/* Home page behavior: the logo intro and the screenshot gallery arrows.
-   The inline script in index.html's head decides whether the intro plays
-   (adds the "intro" class) and starts downloading the player and animation
-   data early. Everything here degrades to the static page if it fails. */
+/* Home page behavior: the logo intro, the "See How It Works" link, and the
+   screenshot spotlight. The inline script in index.html's head decides
+   whether the intro plays (adds the "intro" class) and starts downloading the
+   player and animation data early. Everything here degrades to the static
+   page if it fails. */
 (function () {
   'use strict';
 
   var root = document.documentElement;
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var scrollBehavior = reduceMotion ? 'auto' : 'smooth';
 
   /* ---------- Logo intro ---------- */
 
-  /* Matches the app's onboarding welcome screen. The tagline starts rising
-     this long after the logo starts playing (the logo itself runs about
-     2470ms), so the two overlap slightly, exactly as in the app. */
-  var TAGLINE_START_MS = 1900;
+  /* When the logo finishes, the tagline rises in, then the button this much later. */
+  var BUTTON_DELAY_MS = 500;
 
   function initIntro() {
     var intro = window.menularIntro;
@@ -32,6 +32,9 @@
       }
       revealed = true;
       hero.classList.add('is-revealed');
+      window.setTimeout(function () {
+        hero.classList.add('is-cta');
+      }, BUTTON_DELAY_MS);
     }
 
     function fallBack() {
@@ -65,56 +68,125 @@
           return;
         }
         intro.started = true;
-
-        /* Driven by animation frames, not a wall clock, so the tagline stays
-           in step with the logo even if the tab was in the background. */
-        var revealFrame = (TAGLINE_START_MS / 1000) * anim.frameRate;
-        anim.addEventListener('enterFrame', function (e) {
-          if (e.currentTime >= revealFrame) {
-            reveal();
-          }
-        });
         anim.addEventListener('complete', reveal);
         anim.play();
       });
     }).catch(fallBack);
   }
 
-  /* ---------- Screenshot gallery arrows ---------- */
+  /* ---------- "See How It Works" ---------- */
 
-  function initGallery() {
-    var gallery = document.querySelector('.gallery');
-    var track = gallery && gallery.querySelector('.gallery-track');
-    var prev = gallery && gallery.querySelector('.gallery-prev');
-    var next = gallery && gallery.querySelector('.gallery-next');
-    var pending = false;
+  function initSeeHow() {
+    var link = document.querySelector('.see-how');
+    var target = document.getElementById('how-it-works');
 
-    if (!track || !prev || !next) {
+    if (!link || !target) {
       return;
+    }
+
+    /* Without JavaScript the link still jumps to the section. */
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
+    });
+  }
+
+  /* ---------- Screenshot spotlight ---------- */
+
+  var ENTER_STAGGER_MS = 90;
+  var ENTER_MS = 800;
+
+  function initSpotlight() {
+    var section = document.querySelector('.how');
+    var strip = section && section.querySelector('.spot-strip');
+
+    if (!strip) {
+      return;
+    }
+
+    var slots = Array.prototype.slice.call(strip.children);
+    var dots = Array.prototype.slice.call(section.querySelectorAll('.spot-dot'));
+    var prev = section.querySelector('.spot-prev');
+    var next = section.querySelector('.spot-next');
+    var last = slots.length - 1;
+    var active = -1;
+    var target = null;
+    var pending = false;
+    var settleTimer = null;
+
+    /* scrollLeft that puts card i in the middle of the strip. */
+    function centerLeft(i) {
+      var slot = slots[i];
+      return slot.offsetLeft + slot.offsetWidth / 2 - strip.clientWidth / 2;
+    }
+
+    function nearest() {
+      var mid = strip.scrollLeft + strip.clientWidth / 2;
+      var best = 0;
+      var bestDistance = Infinity;
+      for (var i = 0; i <= last; i++) {
+        var distance = Math.abs(slots[i].offsetLeft + slots[i].offsetWidth / 2 - mid);
+        if (distance < bestDistance) {
+          best = i;
+          bestDistance = distance;
+        }
+      }
+      return best;
+    }
+
+    function go(i) {
+      i = Math.max(0, Math.min(last, i));
+      target = i;
+      strip.scrollTo({ left: centerLeft(i), behavior: scrollBehavior });
+    }
+
+    /* Step from where a scroll in progress is heading, so repeated presses
+       move one card each instead of repeating the same card. */
+    function step(direction) {
+      go((target !== null ? target : active) + direction);
+    }
+
+    function setActive(i) {
+      if (i === active) {
+        return;
+      }
+      active = i;
+
+      slots.forEach(function (slot, k) {
+        slot.classList.toggle('is-active', k === i);
+      });
+      dots.forEach(function (dot, k) {
+        if (k === i) {
+          dot.setAttribute('aria-current', 'true');
+        } else {
+          dot.removeAttribute('aria-current');
+        }
+      });
+
+      if (prev && next) {
+        /* Enable first, then move focus off a button that is about to be
+           disabled, so keyboard users are not dropped back to the page. */
+        var focused = document.activeElement;
+        if (i > 0) {
+          prev.disabled = false;
+        }
+        if (i < last) {
+          next.disabled = false;
+        }
+        if (i === 0 && focused === prev) {
+          next.focus();
+        } else if (i === last && focused === next) {
+          prev.focus();
+        }
+        prev.disabled = i === 0;
+        next.disabled = i === last;
+      }
     }
 
     function update() {
       pending = false;
-      var max = track.scrollWidth - track.clientWidth;
-      var atStart = track.scrollLeft <= 2;
-      var atEnd = track.scrollLeft >= max - 2;
-      var focused = document.activeElement;
-
-      /* Enable first, then move focus off a button that is about to be
-         disabled, so keyboard users are not dropped back to the page. */
-      if (!atStart) {
-        prev.disabled = false;
-      }
-      if (!atEnd) {
-        next.disabled = false;
-      }
-      if (atStart && focused === prev && !atEnd) {
-        next.focus();
-      } else if (atEnd && focused === next && !atStart) {
-        prev.focus();
-      }
-      prev.disabled = atStart;
-      next.disabled = atEnd;
+      setActive(nearest());
     }
 
     function requestUpdate() {
@@ -124,27 +196,81 @@
       }
     }
 
-    /* Scroll by however many screenshots are fully visible, like the App Store. */
-    function page(direction) {
-      var items = track.children;
-      if (items.length < 2) {
-        return;
+    strip.addEventListener('scroll', function () {
+      requestUpdate();
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(function () {
+        target = null;
+      }, 150);
+    }, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    strip.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        step(e.key === 'ArrowLeft' ? -1 : 1);
       }
-      var step = items[1].offsetLeft - items[0].offsetLeft;
-      var style = window.getComputedStyle(track);
-      var inner = track.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-      var gap = step - items[0].offsetWidth;
-      var visible = Math.max(1, Math.floor((inner + gap + 1) / step));
-      track.scrollBy({ left: direction * visible * step, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+
+    slots.forEach(function (slot, k) {
+      slot.addEventListener('click', function () {
+        if (k !== active) {
+          go(k);
+        }
+      });
+    });
+
+    dots.forEach(function (dot, k) {
+      dot.addEventListener('click', function () {
+        go(k);
+      });
+    });
+
+    if (prev && next) {
+      prev.addEventListener('click', function () { step(-1); });
+      next.addEventListener('click', function () { step(1); });
     }
 
-    prev.addEventListener('click', function () { page(-1); });
-    next.addEventListener('click', function () { page(1); });
-    track.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
+    section.classList.add('is-ready');
     update();
+    initEntrance(section, strip, slots);
+  }
+
+  /* Cards slide in from the right, staggered, the first time the section's
+     top reaches 70% of the viewport height. Skipped with reduced motion. */
+  function initEntrance(section, strip, slots) {
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      return;
+    }
+
+    strip.classList.add('is-pre-enter');
+
+    var observer = new IntersectionObserver(function (entries) {
+      var entry = entries[entries.length - 1];
+      /* Intersecting the top 70% of the viewport, or already scrolled past. */
+      if (!entry.isIntersecting && entry.boundingClientRect.bottom > 0) {
+        return;
+      }
+      observer.disconnect();
+
+      slots.forEach(function (slot, k) {
+        slot.style.transitionDelay = (k * ENTER_STAGGER_MS) + 'ms';
+      });
+      strip.classList.add('is-entering');
+      strip.classList.remove('is-pre-enter');
+
+      window.setTimeout(function () {
+        strip.classList.remove('is-entering');
+        slots.forEach(function (slot) {
+          slot.style.transitionDelay = '';
+        });
+      }, (slots.length - 1) * ENTER_STAGGER_MS + ENTER_MS + 100);
+    }, { rootMargin: '0px 0px -30% 0px' });
+
+    observer.observe(section);
   }
 
   initIntro();
-  initGallery();
+  initSeeHow();
+  initSpotlight();
 })();
