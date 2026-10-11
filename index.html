@@ -184,13 +184,33 @@
     visibility: visible;
   }
 
-  /* SCREENSHOTS: spotlight strip on blush */
+  /* SCREENSHOTS: spotlight strip on blush. The section fills the screen and
+     the cards are sized from the available height, so the heading, one whole
+     card, and the dots fit at once. home.js measures the stacked heading into
+     --how-head-h; without it, three lines are assumed. */
   .how {
-    --card-w: min(300px, max(240px, 74vw));
+    --avail-h: 100vh;
+    --w2-w: min(300px, max(240px, 74vw));
+    /* Section padding 40 + 20, heading gap 18, strip padding 12 + 24, dots 44. */
+    --chrome: 158px;
+    --head-h: var(--how-head-h, calc(3 * 1.15 * clamp(24px, 6vw, 34px)));
+    --card-h: max(280px, min(calc(var(--w2-w) * 1630 / 750), calc(var(--avail-h) - var(--chrome) - var(--head-h))));
+    --card-w: calc(var(--card-h) * 750 / 1630);
     --gap: 14px;
     --radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 40px 0 20px;
     background: #F1DED5;
-    padding: clamp(64px, 9vw, 120px) 0 clamp(48px, 7vw, 96px);
+  }
+
+  @supports (height: 100svh) {
+    .how {
+      --avail-h: 100svh;
+    }
   }
 
   .how:focus {
@@ -199,6 +219,7 @@
 
   .how-head {
     max-width: calc(1200px + 40px);
+    width: 100%;
     margin: 0 auto;
     padding: 0 20px;
   }
@@ -206,8 +227,8 @@
   .how-title {
     font-family: Newsreader, Georgia, serif;
     font-weight: 400;
-    font-size: clamp(30px, 4.3vw, 56px);
-    line-height: 1.12;
+    font-size: clamp(24px, 6vw, 34px);
+    line-height: 1.15;
     letter-spacing: -0.015em;
     color: #2b2520;
     text-wrap: balance;
@@ -224,14 +245,14 @@
 
   .spot-stage {
     position: relative;
-    margin-top: clamp(32px, 4.5vw, 52px);
+    margin-top: 18px;
   }
 
   .spot-strip {
     position: relative;
     display: flex;
     gap: var(--gap);
-    padding: 16px 0 32px;
+    padding: 12px 0 24px;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
@@ -285,8 +306,19 @@
     transform: none;
   }
 
-  .how.is-ready .spot-slot:not(.is-active) {
-    cursor: pointer;
+  /* Every card opens the full-screen viewer. */
+  .spot-card[role="button"] {
+    cursor: zoom-in;
+  }
+
+  .spot-card[role="button"]:focus-visible {
+    outline: 2px solid #6D2E19;
+    outline-offset: 3px;
+  }
+
+  /* Re-centering after the viewer closes happens without animation. */
+  .spot-strip.is-instant .spot-card {
+    transition: none !important;
   }
 
   /* One-time entrance, started by home.js. */
@@ -340,7 +372,7 @@
 
   @media (min-width: 768px) {
     .how {
-      --card-w: min(360px, max(240px, 74vw));
+      --w2-w: min(360px, max(240px, 74vw));
       --gap: 24px;
       --radius: 24px;
     }
@@ -349,6 +381,201 @@
       max-width: calc(1200px + 64px);
       padding: 0 32px;
     }
+  }
+
+  /* Desktop: the heading holds still in a left column, vertically centered
+     on the active card, and the strip fills the rest. Spotlight centering is
+     relative to the strip, so the active card sits in the middle of the
+     right area. */
+  @media (min-width: 1024px) {
+    .how {
+      /* Section padding 32 + 32, strip padding 16 + 28, dots 44. */
+      --chrome: 152px;
+      --head-h: 0px;
+      display: grid;
+      grid-template-columns: clamp(320px, 30vw, 440px) minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      align-content: center;
+      column-gap: clamp(24px, 3vw, 48px);
+      padding: 32px 0 32px max(40px, calc((100vw - 1440px) / 2 + 40px));
+    }
+
+    .how-head {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      max-width: none;
+      margin: 0;
+      /* The card's center sits 6px above the strip's, because of the strip's
+         uneven padding; this keeps the heading level with it. */
+      padding: 0 0 12px;
+    }
+
+    .how-title {
+      font-size: clamp(32px, 3.2vw, 48px);
+      line-height: 1.12;
+    }
+
+    .spot-stage {
+      grid-column: 2;
+      grid-row: 1;
+      margin-top: 0;
+    }
+
+    .spot-strip {
+      padding: 16px 0 28px;
+      /* Soft left edge, so cards never cut off hard beside the heading. */
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 48px);
+      mask-image: linear-gradient(to right, transparent, #000 48px);
+    }
+
+    .spot-dots {
+      grid-column: 2;
+      grid-row: 2;
+    }
+  }
+
+  /* FULL-SCREEN VIEWER, built by home.js when the page loads. */
+  .viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(20,16,13,.96);
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+
+  .viewer[hidden] {
+    display: none;
+  }
+
+  .viewer.is-open {
+    opacity: 1;
+  }
+
+  .viewer-track {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    touch-action: pan-x pinch-zoom;
+  }
+
+  .viewer-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .viewer-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  .viewer-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .viewer-close,
+  .viewer-arrow {
+    position: absolute;
+    z-index: 1;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #f7f1e7;
+    cursor: pointer;
+  }
+
+  .viewer-close {
+    top: max(12px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    display: flex;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(247,241,231,.16);
+    background: rgba(20,16,13,.6);
+  }
+
+  .viewer-count {
+    position: absolute;
+    top: calc(max(12px, env(safe-area-inset-top)) + 6px);
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(20,16,13,.6);
+    color: rgba(247,241,231,.8);
+    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  .viewer-arrow {
+    top: 50%;
+    display: none;
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
+    border: 1px solid rgba(247,241,231,.22);
+    background: rgba(247,241,231,.1);
+    transition: background-color .2s ease, opacity .2s ease;
+  }
+
+  .viewer-prev { left: max(16px, env(safe-area-inset-left)); }
+  .viewer-next { right: max(16px, env(safe-area-inset-right)); }
+
+  .viewer-arrow:hover:not(:disabled) {
+    background: rgba(247,241,231,.2);
+  }
+
+  .viewer-arrow:disabled {
+    opacity: .3;
+    cursor: default;
+  }
+
+  .viewer-close:focus-visible,
+  .viewer-arrow:focus-visible {
+    outline: 2px solid #f7f1e7;
+    outline-offset: 3px;
+  }
+
+  /* On phones the screenshot spans the full width, so keep the close button
+     and counter in their own band above it instead of over its caption. */
+  @media (max-width: 767px) {
+    .viewer-slide {
+      padding-top: calc(max(12px, env(safe-area-inset-top)) + 52px);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .viewer-arrow {
+      display: flex;
+    }
+  }
+
+  /* While the viewer is open the page underneath cannot scroll, iOS included.
+     home.js sets the body's top offset and restores the position on close. */
+  .viewer-lock body {
+    position: fixed;
+    left: 0;
+    right: 0;
+    overflow: hidden;
   }
 
   /* CLOSING */
@@ -428,7 +655,9 @@
      and hover changes color only. */
   @media (prefers-reduced-motion: reduce) {
     .how.is-ready .spot-card,
-    .spot-dot span {
+    .spot-dot span,
+    .viewer,
+    .viewer-arrow {
       transition: none;
     }
 
@@ -516,7 +745,7 @@
 <!-- FOOTER -->
 <footer class="site-footer">
   <nav class="footer-links" aria-label="Footer">
-    <span class="footer-group"><a href="/about">About</a><span class="footer-sep" aria-hidden="true">|</span><a href="mailto:support@cosible.com">Support</a></span>
+    <span class="footer-group"><a href="/about">About</a><span class="footer-sep" aria-hidden="true">|</span><a href="/terms-of-service#contact">Contact</a></span>
     <span class="footer-sep footer-sep-mid" aria-hidden="true">|</span>
     <span class="footer-group"><a href="/terms-of-service">Terms of Service</a><span class="footer-sep" aria-hidden="true">|</span><a href="/privacy-policy">Privacy Policy</a></span>
   </nav>
