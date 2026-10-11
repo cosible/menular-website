@@ -90,6 +90,35 @@
       target.focus({ preventScroll: true });
       target.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
     });
+
+    /* Arriving at /#how-it-works (from the About page) lands exactly where the
+       link does. The head script has already skipped the intro. Fonts and
+       images can shift the layout after the browser's own jump, so line up
+       again once they are in, unless the visitor has started scrolling. */
+    if (location.hash !== '#how-it-works') {
+      return;
+    }
+
+    var userMoved = false;
+    function markMoved() {
+      userMoved = true;
+    }
+    ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (type) {
+      window.addEventListener(type, markMoved, { once: true, passive: true });
+    });
+
+    function land() {
+      if (!userMoved) {
+        target.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }
+
+    target.focus({ preventScroll: true });
+    land();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(land);
+    }
+    window.addEventListener('load', land, { once: true });
   }
 
   /* ---------- Screenshot spotlight ---------- */
@@ -121,18 +150,27 @@
     var stripWidth = 0;
     var cardWidth = 0;
 
-    /* scrollLeft that puts card i in the middle of the strip. */
-    function centerLeft(i) {
+    /* The active card is the centered one on phones and tablets, and the
+       leftmost one on desktop, where the cards snap to their start edge after
+       the strip's scroll padding. The CSS decides which. */
+    function snapsToStart() {
+      return window.getComputedStyle(slots[0]).scrollSnapAlign.indexOf('start') !== -1;
+    }
+
+    /* scrollLeft that puts card i in the active position. */
+    function alignLeft(i) {
       var slot = slots[i];
+      if (snapsToStart()) {
+        return slot.offsetLeft - (parseFloat(window.getComputedStyle(strip).scrollPaddingLeft) || 0);
+      }
       return slot.offsetLeft + slot.offsetWidth / 2 - strip.clientWidth / 2;
     }
 
     function nearest() {
-      var mid = strip.scrollLeft + strip.clientWidth / 2;
       var best = 0;
       var bestDistance = Infinity;
       for (var i = 0; i <= last; i++) {
-        var distance = Math.abs(slots[i].offsetLeft + slots[i].offsetWidth / 2 - mid);
+        var distance = Math.abs(alignLeft(i) - strip.scrollLeft);
         if (distance < bestDistance) {
           best = i;
           bestDistance = distance;
@@ -148,7 +186,7 @@
     function go(i) {
       i = clamp(i);
       target = i;
-      strip.scrollTo({ left: centerLeft(i), behavior: scrollBehavior });
+      strip.scrollTo({ left: alignLeft(i), behavior: scrollBehavior });
     }
 
     function setActive(i) {
@@ -181,11 +219,37 @@
       }
     }
 
+    /* On desktop the balanced heading lines fall short of the column's full
+       width; narrow the column to the widest line. The column is reset to its
+       CSS width first, so the heading can grow again when the window does. */
+    function fitHeadColumn() {
+      section.style.removeProperty('--how-head-w');
+      if (window.getComputedStyle(section).display !== 'grid') {
+        return;
+      }
+      /* Text nodes only: the heading's block spans are as wide as the column. */
+      var range = document.createRange();
+      var walker = document.createTreeWalker(head, NodeFilter.SHOW_TEXT);
+      var left = head.getBoundingClientRect().left;
+      var right = left;
+      while (walker.nextNode()) {
+        range.selectNodeContents(walker.currentNode);
+        var rects = range.getClientRects();
+        for (var i = 0; i < rects.length; i++) {
+          right = Math.max(right, rects[i].right);
+        }
+      }
+      if (right > left) {
+        section.style.setProperty('--how-head-w', Math.ceil(right - left + 1) + 'px');
+      }
+    }
+
     /* Card size follows the stacked heading's height (see .how in the CSS).
-       When the card or strip size changes, keep the same card centered. */
+       When the card or strip size changes, keep the same card active. */
     function measure() {
       if (head) {
         section.style.setProperty('--how-head-h', head.getBoundingClientRect().height + 'px');
+        fitHeadColumn();
       }
       var w = strip.clientWidth;
       var c = slots[0].offsetWidth;
@@ -193,14 +257,15 @@
         stripWidth = w;
         cardWidth = c;
         if (active >= 0) {
-          strip.scrollLeft = centerLeft(target !== null ? target : active);
+          strip.scrollLeft = alignLeft(target !== null ? target : active);
         }
       }
     }
 
     if ('ResizeObserver' in window) {
       new ResizeObserver(measure).observe(head || strip);
-    } else if (document.fonts && document.fonts.ready) {
+    }
+    if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(measure);
     }
     window.addEventListener('resize', function () {
@@ -234,7 +299,7 @@
       }
     });
 
-    /* Tabbing to a card brings it to the center. */
+    /* Tabbing to a card brings it to the active position. */
     cards.forEach(function (card, k) {
       card.addEventListener('focus', function () {
         var keyboard = true;
@@ -261,12 +326,12 @@
       strip: strip,
       cards: cards,
 
-      /* Centers card i with no scrolling or scaling animation, then focuses
-         the given card without moving anything. */
+      /* Makes card i active with no scrolling or scaling animation, then
+         focuses the given card without moving anything. */
       restore: function (i, focusCard) {
         strip.classList.add('is-instant');
         target = null;
-        strip.scrollTo({ left: centerLeft(i), behavior: 'auto' });
+        strip.scrollTo({ left: alignLeft(i), behavior: 'auto' });
         setActive(i);
         void strip.offsetWidth;
         window.requestAnimationFrame(function () {

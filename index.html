@@ -23,12 +23,13 @@
 <script>
   /* Decide before first paint whether the logo intro plays, so the hero never
      flashes. Without JavaScript, or with reduced motion, the page keeps the
-     static logo and visible tagline. */
+     static logo and visible tagline. So does arriving at #how-it-works, since
+     the opening is off screen and should already be in its final state. */
   (function () {
     var root = document.documentElement;
     root.classList.add('js');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce || !window.fetch || !window.Promise) {
+    if (reduce || !window.fetch || !window.Promise || location.hash === '#how-it-works') {
       return;
     }
     root.classList.add('intro');
@@ -384,19 +385,21 @@
   }
 
   /* Desktop: the heading holds still in a left column, vertically centered
-     on the active card, and the strip fills the rest. Spotlight centering is
-     relative to the strip, so the active card sits in the middle of the
-     right area. */
+     on the active card, and the strip fills the rest. home.js narrows the
+     column to the heading's widest line (--how-head-w), so no empty space
+     sits between the heading and the strip. The active card is the
+     leftmost one, right after a fixed lead-in gap at the start of the strip;
+     the rest run off to the right. */
   @media (min-width: 1024px) {
     .how {
       /* Section padding 32 + 32, strip padding 16 + 28, dots 44. */
       --chrome: 152px;
       --head-h: 0px;
+      --lead: clamp(40px, 4vw, 64px);
       display: grid;
-      grid-template-columns: clamp(320px, 30vw, 440px) minmax(0, 1fr);
+      grid-template-columns: var(--how-head-w, clamp(320px, 30vw, 440px)) minmax(0, 1fr);
       grid-template-rows: auto auto;
       align-content: center;
-      column-gap: clamp(24px, 3vw, 48px);
       padding: 32px 0 32px max(40px, calc((100vw - 1440px) / 2 + 40px));
     }
 
@@ -424,9 +427,26 @@
 
     .spot-strip {
       padding: 16px 0 28px;
-      /* Soft left edge, so cards never cut off hard beside the heading. */
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 48px);
-      mask-image: linear-gradient(to right, transparent, #000 48px);
+      scroll-padding-left: var(--lead);
+      /* Soft left edge across the lead-in gap only. At the start the gap is
+         empty, so the first card shows in full; once scrolled, earlier cards
+         fade out as they pass under it. */
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--lead));
+      mask-image: linear-gradient(to right, transparent, #000 var(--lead));
+    }
+
+    /* The lead-in gap before the first card, and enough room after the last
+       one for it to reach the active position. */
+    .spot-strip::before {
+      flex-basis: calc(var(--lead) - var(--gap));
+    }
+
+    .spot-strip::after {
+      flex-basis: calc(100% - var(--lead) - var(--card-w) - var(--gap));
+    }
+
+    .spot-slot {
+      scroll-snap-align: start;
     }
 
     .spot-dots {
