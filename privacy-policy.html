@@ -160,11 +160,11 @@
 <div class="legal-content">
 
 <h1 class="legal-title">Privacy Policy</h1>
-<p class="legal-updated">Last updated: October 22, 2026</p>
+<p class="legal-updated">Last updated: October 31, 2026</p>
 
 <p>Menular ("Menular," "we," "us," or "our") is a mobile application operated by Cosible LLC. This Privacy Policy explains what information we collect when you use the Menular app, how we collect it, how we use and share it, how long we keep it, and the choices and rights you have. By using Menular, you agree to the practices described here.</p>
 
-<p>This policy applies to the Menular iOS app and to menular.com. A link to this policy is available inside the app on the Settings screen.</p>
+<p>This policy applies to the Menular app for iPhone and Android and to menular.com. A link to this policy is available inside the app on the Settings screen.</p>
 
 <p>If you have any questions, contact us at support@cosible.com.</p>
 
@@ -182,7 +182,7 @@ support@cosible.com
 
 <h2>Information we collect</h2>
 
-<p><strong>Account information.</strong> When you sign in, we receive your name and email address from Apple (Sign in with Apple) or Google (Google Sign In). We do not offer email and password sign-in, and we never receive or store your Apple or Google password. If you use Sign in with Apple and choose to hide your email address, we receive only Apple's private relay address. For users who sign in with Apple, we store an Apple authorization token on our servers. We use this token only to revoke your access if you delete your account.</p>
+<p><strong>Account information.</strong> When you sign in, we receive your name and email address from Apple (Sign in with Apple, available on iPhone) or Google (Google Sign In, available on iPhone and Android). We do not offer email and password sign-in, and we never receive or store your Apple or Google password. If you use Sign in with Apple and choose to hide your email address, we receive only Apple's private relay address. For users who sign in with Apple, we store an Apple authorization token on our servers. We use this token only to revoke your access if you delete your account.</p>
 
 <p><strong>Profile and preferences.</strong> Your display name, your native language, your preferred currency, and your location-detection setting.</p>
 
@@ -194,24 +194,26 @@ support@cosible.com
 
 <p><strong>Usage history.</strong> A record of which menus you have scanned and when, so you can return to them and filter them.</p>
 
-<p><strong>Purchase information.</strong> When you buy a scan pass, a scan credit pack, or a Language Learner add-on, we store the Apple StoreKit transaction identifier, the price paid, and the details of what you purchased. Apple, not Menular, processes your payment, so Menular never receives or stores your payment card number or any other payment information.</p>
+<p><strong>Purchase information.</strong> When you buy a scan pass, a scan credit pack, or a Language Learner add-on, we store the store's transaction identifier (from the Apple App Store or Google Play), the price paid, and the details of what you purchased. Apple or Google, not Menular, processes your payment, so Menular never receives or stores your payment card number or any other payment information.</p>
 
-<p><strong>Device location.</strong> We only use your device location if you turn on location detection, and iOS will ask for your permission before we can access it. When it is on, we use your approximate location for two purposes: to detect the country and currency of a scanned menu so we can convert prices into your home currency, and to let you filter your scan history by the location where each menu was scanned. If location detection is off, or if you deny or later revoke the iOS location permission, we do not access your location, and the rest of the app continues to work.</p>
+<p><strong>Device location.</strong> We only use your device location if you turn on location detection, and your phone will ask for your permission before we can access it. When it is on, we use only your approximate location, for two purposes: to detect the country and currency of a scanned menu so we can convert prices into your home currency, and to let you filter your scan history by the location where each menu was scanned. To turn that location into a city, region, and country, the app uses the location service built into your phone (Apple on iPhone, Google on Android). If location detection is off, or if you deny or later revoke the location permission, we do not access your location, and the rest of the app continues to work.</p>
+
+<p><strong>Device identifier (Android only).</strong> To limit free scans to five per phone, the Android app sends us a hashed (one-way scrambled) version of the Android ID, an identifier that Android assigns to Menular on your phone. We store it with the number of free scans used on that phone. It cannot be turned back into the Android ID, and it is not linked to your name, email address, or account. See "How long we keep your information" below. The iPhone app does not send us a device identifier.</p>
 
 <h2>How we collect this information</h2>
 
-<p>We collect information in three ways: directly from you when you type it into the app (your profile, your staff questions, your bookmarks), automatically from the app when you use it (scan records, entitlement balances, purchase records), and from third parties who authenticate or bill you (Apple and Google provide your name and email at sign-in, Apple and RevenueCat provide purchase confirmations). We do not buy personal information from data brokers and we do not collect information about you from any other source.</p>
+<p>We collect information in three ways: directly from you when you type it into the app (your profile, your staff questions, your bookmarks), automatically from the app when you use it (scan records, entitlement balances, purchase records), and from third parties who authenticate or bill you (Apple and Google provide your name and email at sign-in; Apple, Google, and RevenueCat provide purchase confirmations). We do not buy personal information from data brokers and we do not collect information about you from any other source.</p>
 
 <h2>Device permissions</h2>
 
-<p>Menular asks for the following iOS permissions, and explains why at the moment it asks:</p>
+<p>Menular asks for the following permissions on your phone, and explains why at the moment it asks:</p>
 
 <ul>
 <li><strong>Camera.</strong> Required to photograph a menu so it can be read. Without it, scanning is not possible.</li>
-<li><strong>Location.</strong> Optional, used only when location detection is on, as described above.</li>
+<li><strong>Location.</strong> Optional, used only when location detection is on, as described above. On Android, Menular asks only for approximate location.</li>
 </ul>
 
-<p>You can change or withdraw any of these permissions at any time in the iOS Settings app.</p>
+<p>You can change or withdraw any of these permissions at any time in your phone's settings.</p>
 
 <h2>Sensitive information you choose to provide</h2>
 
@@ -225,9 +227,9 @@ support@cosible.com
 
 <p><strong>Menu photos.</strong> The photo you take of a menu is used only to read the menu, meaning to extract its text (optical character recognition) and to understand its layout, such as its sections and columns. It is then discarded. We do not store menu images. Only the extracted text that reads as menu content is kept. Background content that does not read as a menu is not retained.</p>
 
-<p><strong>Payment information.</strong> As noted above, Menular does not collect or store any payment card or billing information. All payments are handled by Apple.</p>
+<p><strong>Payment information.</strong> As noted above, Menular does not collect or store any payment card or billing information. All payments are handled by Apple (App Store) or Google (Google Play).</p>
 
-<p><strong>Third-party analytics and advertising trackers.</strong> Menular does not use any third-party analytics, crash-reporting, advertising, or cross-app tracking software. We do not track you across apps or websites owned by other companies, and we do not use the Apple advertising identifier. We do keep basic internal operational logs about each scan (such as the size of the menu and its processing cost) to run and improve the Service. These logs contain technical details such as app version and connection type, and do not include your name or email address.</p>
+<p><strong>Third-party analytics and advertising trackers.</strong> Menular does not use any third-party analytics, crash-reporting, advertising, or cross-app tracking software. We do not track you across apps or websites owned by other companies, and we do not use the Apple advertising identifier or the Google advertising ID. We do keep basic internal operational logs about each scan (such as the size of the menu and its processing cost) to run and improve the Service. These logs contain technical details such as app version and connection type, and do not include your name or email address.</p>
 
 <h2>Pre-account usage</h2>
 
@@ -235,7 +237,12 @@ support@cosible.com
 
 <p>The anonymous account holds the menus you scan (including the names you give them and the cover photos you choose), your bookmarks, your favorite menus, your purchases, and your scan counts. Usage and cost records for app features are linked to the same random ID. Your Ask Staff Questions and your preferences (such as your language and currency) stay only on your phone until you sign in.</p>
 
-<p>Free scans are limited to five per phone by a small counter stored on your phone. The counter is kept if you delete and reinstall the app, and it contains no personal information.</p>
+<p>Free scans are limited to five per phone:</p>
+
+<ul>
+<li><strong>iPhone.</strong> A small counter is stored on your phone. It is kept if you delete and reinstall the app, and it contains no personal information.</li>
+<li><strong>Android.</strong> The count is stored on our servers with the hashed device identifier described under "Device identifier (Android only)" above, so it is also kept if you delete and reinstall the app.</li>
+</ul>
 
 <p>When you sign in, everything saved under the anonymous account moves to your signed-in account, so you do not lose it. If you sign in to an account you already have, we combine the two.</p>
 
@@ -250,6 +257,7 @@ support@cosible.com
 <li>Save your menus, favorites, bookmarks, staff questions, and history so you can return to them across your trips, and let you filter your history by location.</li>
 <li>Detect the correct country and currency for a menu and convert prices into your home currency (only when location detection is on).</li>
 <li>Process, restore, and reconcile your purchases and track your scan entitlements.</li>
+<li>Limit free scans to five per phone and prevent them from being repeated.</li>
 <li>Move everything saved under your anonymous account into your signed-in account when you sign in.</li>
 <li>Build and maintain a shared reference library of dish and beverage information, without any link to you, to improve translations and photos for all users.</li>
 <li>Maintain the security of the app, prevent abuse, and comply with our legal obligations.</li>
@@ -259,7 +267,7 @@ support@cosible.com
 
 <h2>Legal bases for processing (EEA and UK)</h2>
 
-<p>If you are in the European Economic Area or the United Kingdom, we process your information on the following legal bases: performance of a contract with you (providing the Service and your purchases), our legitimate interests (keeping the Service secure and preventing abuse), your consent (device location, and any sensitive information you choose to write into an Ask Staff Question), and compliance with legal obligations (tax and financial record keeping). You can withdraw consent at any time by turning off location detection or by deleting the relevant content.</p>
+<p>If you are in the European Economic Area or the United Kingdom, we process your information on the following legal bases: performance of a contract with you (providing the Service and your purchases), our legitimate interests (keeping the Service secure, preventing abuse, and limiting free scans per phone), your consent (device location, and any sensitive information you choose to write into an Ask Staff Question), and compliance with legal obligations (tax and financial record keeping). You can withdraw consent at any time by turning off location detection or by deleting the relevant content.</p>
 
 <h2>How your information is shared</h2>
 
@@ -279,9 +287,11 @@ support@cosible.com
 <tr><td>Google Cloud Text-to-Speech</td><td>Generating pronunciation audio</td></tr>
 <tr><td>Serper.dev</td><td>Looking up reference photos for dishes and beverages</td></tr>
 <tr><td>ExchangeRate-API</td><td>Currency conversion</td></tr>
-<tr><td>Apple</td><td>Sign in with Apple and payment processing through StoreKit</td></tr>
-<tr><td>Google</td><td>Google Sign In</td></tr>
+<tr><td>Apple</td><td>Sign in with Apple, App Store payments, and the iPhone location service (turning approximate location into a city, region, and country)</td></tr>
+<tr><td>Google</td><td>Google Sign In, and the Android location service (turning approximate location into a city, region, and country)</td></tr>
+<tr><td>Google Play</td><td>Payment processing for purchases made on Android</td></tr>
 <tr><td>RevenueCat</td><td>Managing and validating your purchases and entitlements</td></tr>
+<tr><td>Expo</td><td>Delivering app updates</td></tr>
 </tbody>
 </table>
 </div>
@@ -292,7 +302,7 @@ support@cosible.com
 
 <h2>Payments</h2>
 
-<p>Payments are handled by Apple through StoreKit, and purchases are managed through RevenueCat. We store a record of each purchase (the transaction identifier, the price, and what was bought) so we can deliver, restore, and reconcile your purchases. Menular does not collect or store any payment card number or billing information.</p>
+<p>Payments are handled by Apple through the App Store on iPhone and by Google through Google Play on Android. Purchases are managed through RevenueCat, which keeps a record of your purchases under a random ID rather than your name or email address. We store a record of each purchase (the store's transaction identifier, the price, and what was bought) so we can deliver, restore, and reconcile your purchases. Menular does not collect or store any payment card number or billing information.</p>
 
 <h2>International users and data transfers</h2>
 
@@ -302,7 +312,11 @@ support@cosible.com
 
 <p>We keep your account information and content for as long as your account is active. When you delete your account, we permanently remove your profile, menus, favorites, bookmarks, staff questions, and scan history (see Account deletion below). Dish and beverage information in the shared reference library is not linked to you, so it is not affected by account deletion. We keep anonymous accounts, and the purchases, scans, and menus stored under them, for as long as needed to let you use what you bought and to meet the financial record-keeping obligations described below.</p>
 
-<p>We retain a de-identified record of your purchases (with no personal link back to you) after account deletion, because we need it to meet tax, accounting, and payment-reconciliation obligations. We keep these de-identified records for up to 7 years, consistent with financial record-keeping requirements.</p>
+<p>After you delete your account, we keep a record of your past purchases (the store's transaction identifier, the price, and what was bought), no longer linked to your account, because we need it for tax, accounting, and payment-reconciliation obligations. We keep these records for up to 7 years. The transaction identifier still matches the payment record held by Apple or Google, and RevenueCat keeps its own purchase history under a random ID.</p>
+
+<p>On Android, we keep the hashed device identifier and its free-scan count for as long as Menular offers free scans, including after you delete your account or the app, so that free scans cannot be repeated. It is never linked to your name, email address, or account.</p>
+
+<p>Our internal operational logs about scans do not include your name, email address, or account. Server logs and backups kept by our hosting provider may contain your information for a limited time after deletion, until they are automatically overwritten.</p>
 
 <h2>Your rights and choices</h2>
 
@@ -314,7 +328,7 @@ support@cosible.com
 <li><strong>Deletion:</strong> delete your account and associated data at any time from within the app (Settings), or by contacting us.</li>
 <li><strong>Portability:</strong> request your information in a portable format.</li>
 <li><strong>Objection and restriction:</strong> object to or ask us to restrict certain processing.</li>
-<li><strong>Withdraw consent:</strong> turn off location detection in the app or revoke the permission in iOS Settings, and edit or delete any content you have written, at any time.</li>
+<li><strong>Withdraw consent:</strong> turn off location detection in the app or revoke the permission in your phone's settings, and edit or delete any content you have written, at any time.</li>
 </ul>
 
 <p>If you are in the European Economic Area or the United Kingdom (GDPR), these rights apply to you, and you also have the right to lodge a complaint with your local data protection authority.</p>
@@ -329,7 +343,7 @@ support@cosible.com
 
 <p>If you signed in with Apple, we also revoke your Apple authorization token at the time of deletion. If you used Menular before signing in, the anonymous account that held your data is deleted too.</p>
 
-<p>As noted above, we retain a de-identified record of your past purchases for tax and reconciliation purposes. This record is no longer linked to your identity after deletion.</p>
+<p>As noted above, we keep a record of your past purchases for tax and reconciliation purposes, no longer linked to your account. On Android, the hashed device identifier used to limit free scans is also kept.</p>
 
 <p>Deleting your account affects your entitlements. Any unused scan credits, an active scan pass, or remaining bookmark capacity from a Language Learner add-on are permanently forfeited on deletion and cannot be restored. See the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a> for details.</p>
 
