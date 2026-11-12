@@ -9,7 +9,9 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: max(16px, calc(var(--badge-h) / 4));
+  /* Side by side: a wider gap. Wrapped: the Play badge sits closer below. */
+  column-gap: 32px;
+  row-gap: max(16px, calc(var(--badge-h) / 4));
 }
 
 .badge-row a {
