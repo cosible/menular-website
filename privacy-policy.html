@@ -160,7 +160,7 @@
 <div class="legal-content">
 
 <h1 class="legal-title">Privacy Policy</h1>
-<p class="legal-updated">Last updated: October 31, 2026</p>
+<p class="legal-updated">Last updated: November 12, 2026</p>
 
 <p>Menular ("Menular," "we," "us," or "our") is a mobile application operated by Cosible LLC. This Privacy Policy explains what information we collect when you use the Menular app, how we collect it, how we use and share it, how long we keep it, and the choices and rights you have. By using Menular, you agree to the practices described here.</p>
 
@@ -196,7 +196,7 @@ support@cosible.com
 
 <p><strong>Purchase information.</strong> When you buy a scan pass, a scan credit pack, or a Language Learner add-on, we store the store's transaction identifier (from the Apple App Store or Google Play), the price paid, and the details of what you purchased. Apple or Google, not Menular, processes your payment, so Menular never receives or stores your payment card number or any other payment information.</p>
 
-<p><strong>Device location.</strong> We only use your device location if you turn on location detection, and your phone will ask for your permission before we can access it. When it is on, we use only your approximate location, for two purposes: to detect the country and currency of a scanned menu so we can convert prices into your home currency, and to let you filter your scan history by the location where each menu was scanned. To turn that location into a city, region, and country, the app uses the location service built into your phone (Apple on iPhone, Google on Android). If location detection is off, or if you deny or later revoke the location permission, we do not access your location, and the rest of the app continues to work.</p>
+<p><strong>Device location.</strong> We only use your device location if you turn on location detection, and your phone will ask for your permission before we can access it. When it is on, we use only your approximate location, for three purposes: to tailor dish descriptions to the region you are visiting, to detect the country and currency of a scanned menu so we can convert prices into your home currency, and to let you filter your scan history by the location where each menu was scanned. To turn that location into a city, region, and country, the app uses the location service built into your phone (Apple on iPhone, Google on Android). If location detection is off, or if you deny or later revoke the location permission, we do not access your location, and the rest of the app continues to work.</p>
 
 <p><strong>Device identifier (Android only).</strong> To limit free scans to five per phone, the Android app sends us a hashed (one-way scrambled) version of the Android ID, an identifier that Android assigns to Menular on your phone. We store it with the number of free scans used on that phone. It cannot be turned back into the Android ID, and it is not linked to your name, email address, or account. See "How long we keep your information" below. The iPhone app does not send us a device identifier.</p>
 
@@ -256,6 +256,7 @@ support@cosible.com
 <li>Provide the core service: scanning menus, translating and enriching dishes, generating a staff-facing order, and producing pronunciation audio.</li>
 <li>Save your menus, favorites, bookmarks, staff questions, and history so you can return to them across your trips, and let you filter your history by location.</li>
 <li>Detect the correct country and currency for a menu and convert prices into your home currency (only when location detection is on).</li>
+<li>Tailor dish descriptions to the region where you scan a menu (only when location detection is on).</li>
 <li>Process, restore, and reconcile your purchases and track your scan entitlements.</li>
 <li>Limit free scans to five per phone and prevent them from being repeated.</li>
 <li>Move everything saved under your anonymous account into your signed-in account when you sign in.</li>
@@ -283,7 +284,7 @@ support@cosible.com
 <tbody>
 <tr><td>Supabase</td><td>Account authentication, database, and secure storage of your app data</td></tr>
 <tr><td>Google Cloud Vision</td><td>Optical character recognition (converting your menu photo to text)</td></tr>
-<tr><td>Google (Gemini)</td><td>Menu parsing (from the extracted text and a smaller copy of the menu image), dish enrichment, and translation</td></tr>
+<tr><td>Google (Gemini)</td><td>Menu parsing (from the extracted text and a smaller copy of the menu image), dish enrichment, and translation, using the general location of the scan (city, region, and country) when location detection is on</td></tr>
 <tr><td>Google Cloud Text-to-Speech</td><td>Generating pronunciation audio</td></tr>
 <tr><td>Serper.dev</td><td>Looking up reference photos for dishes and beverages</td></tr>
 <tr><td>ExchangeRate-API</td><td>Currency conversion</td></tr>

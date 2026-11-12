@@ -1,0 +1,30 @@
+/* Shared store badge row (App Store + Google Play), linked from the home and
+   About pages so both stay identical. Each page sets --badge-h to the height
+   its Apple badge already used. The gap is at least one quarter of the badge
+   height, which covers Apple's and Google's clear space rules. When the row
+   cannot fit, the Play badge wraps and sits centered below the Apple badge. */
+.badge-row {
+  --badge-h: 52px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: max(16px, calc(var(--badge-h) / 4));
+}
+
+.badge-row a {
+  display: block;
+  border-radius: 8px;
+}
+
+.badge-row a:focus-visible {
+  outline: 2px solid #6D2E19;
+  outline-offset: 3px;
+}
+
+/* Artwork shown as supplied: fixed height, natural aspect ratio. */
+.badge-row img {
+  display: block;
+  height: var(--badge-h);
+  width: auto;
+}
