@@ -57,14 +57,23 @@
      intro is skipped or falls back, and never after a resize rebuild. */
   var FLAG_WALL_ANIMATE = true;
 
-  /* Each flag fades in over FADE_MS (ease-out), starting in random order
-     when the logo animation starts. Slow version: the wall keeps filling in
-     after the rest of the hero has settled. From the logo's start, the logo
-     runs about 2.47 s (74 frames at 29.97 fps), the tagline has risen in by
-     about 3.4 s, and the button and badges by about 3.9 s; the last flag
-     lands at 5 s. Opacity only, no movement. */
-  var FADE_MS = 1200;
-  var FADE_TOTAL_MS = 5000;
+  /* Flags fade in one at a time, in a steady stream, measured from when the
+     logo animation starts. The first starts at FIRST_START_MS, so the logo
+     opens on an empty background, and the last at LAST_START_MS, with even
+     intervals between. Each start time wobbles by up to JITTER of one
+     interval either way, so the stream doesn't look mechanical (it never
+     changes the order). Each flag fades over FADE_MS, ease-out, opacity only.
+     For reference: the logo runs about 2.47 s (74 frames at 29.97 fps), the
+     tagline has risen in by about 3.4 s, the button and badges by about
+     3.9 s, and the last flag lands at about 5.1 s. */
+  var FIRST_START_MS = 500;
+  var LAST_START_MS = 4400;
+  var FADE_MS = 700;
+  var JITTER = 0.25;
+
+  /* A flag never starts next to (diagonals included) any of the last
+     NO_NEIGHBOR_RECENT flags that started. */
+  var NO_NEIGHBOR_RECENT = 3;
 
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fadeActive = false;
@@ -183,30 +192,81 @@
     });
   }
 
-  function fadeIn() {
-    var flags = Array.prototype.slice.call(grid.children);
-    var ranks = flags.map(function (flag, i) {
-      return i;
-    });
-    var spread = FADE_TOTAL_MS - FADE_MS;
-    var last = Math.max(1, flags.length - 1);
+  /* True when cells a and b touch, diagonals included, at the current
+     column count. */
+  function touching(a, b) {
+    return Math.abs(Math.floor(a / cols) - Math.floor(b / cols)) <= 1 &&
+      Math.abs(a % cols - b % cols) <= 1;
+  }
 
-    /* Random order, start times spread evenly across the spread. */
-    for (var i = ranks.length - 1; i > 0; i--) {
+  /* Cell indexes in the order they start: shuffled, then each time the first
+     remaining cell that doesn't touch any of the last NO_NEIGHBOR_RECENT
+     picks (or simply the first remaining one if none qualifies). That
+     fallback happens on roughly a third of shuffles, almost always for the
+     last flag or two, so a fresh shuffle is tried, up to ORDER_TRIES in
+     all, until one needs no fallback. */
+  var ORDER_TRIES = 20;
+
+  function fadeOrder(count) {
+    var order = null;
+
+    for (var t = 0; t < ORDER_TRIES; t++) {
+      order = tryOrder(count);
+      if (!order.fellBack) {
+        break;
+      }
+    }
+    return order;
+  }
+
+  function tryOrder(count) {
+    var remaining = [];
+    var order = [];
+    var i;
+
+    for (i = 0; i < count; i++) {
+      remaining.push(i);
+    }
+    for (i = remaining.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
-      var swap = ranks[i];
-      ranks[i] = ranks[j];
-      ranks[j] = swap;
+      var swap = remaining[i];
+      remaining[i] = remaining[j];
+      remaining[j] = swap;
     }
 
-    flags.forEach(function (img, k) {
-      img.style.transition = 'opacity ' + FADE_MS + 'ms ease-out ' + Math.round(ranks[k] / last * spread) + 'ms';
+    while (remaining.length) {
+      var recent = order.slice(-NO_NEIGHBOR_RECENT);
+      var pick = -1;
+      for (i = 0; i < remaining.length; i++) {
+        if (!recent.some(touching.bind(null, remaining[i]))) {
+          pick = i;
+          break;
+        }
+      }
+      if (pick === -1) {
+        pick = 0;
+        order.fellBack = true;
+      }
+      order.push(remaining.splice(pick, 1)[0]);
+    }
+    return order;
+  }
+
+  function fadeIn() {
+    var flags = grid.children;
+    var order = fadeOrder(flags.length);
+    var interval = flags.length > 1 ? (LAST_START_MS - FIRST_START_MS) / (flags.length - 1) : 0;
+
+    order.forEach(function (cell, k) {
+      var wobble = (Math.random() * 2 - 1) * JITTER * interval;
+      var delay = Math.max(0, Math.round(FIRST_START_MS + k * interval + wobble));
+      flags[cell].style.transition = 'opacity ' + FADE_MS + 'ms ease-out ' + delay + 'ms';
     });
 
     /* Commit the hidden state with the transitions in place, then let go. */
     void grid.offsetWidth;
     wall.classList.remove('is-fade-pending');
-    fadeTimer = window.setTimeout(stopFade, FADE_TOTAL_MS + 100);
+    fadeTimer = window.setTimeout(stopFade, LAST_START_MS + JITTER * interval + FADE_MS + 100);
   }
 
   /* The flags wait hidden until the logo animation starts playing (home.js
