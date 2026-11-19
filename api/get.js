@@ -5,7 +5,7 @@
 
 // Apple provider token (App Store Connect > App Analytics > Campaigns).
 // Leave empty to send iOS users to the App Store without campaign parameters.
-const APPLE_PROVIDER_TOKEN = '';
+const APPLE_PROVIDER_TOKEN = '110413832';
 
 const APP_STORE_URL = 'https://apps.apple.com/app/apple-store/id6793560717?mt=8';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.cosible.menular';
