@@ -221,6 +221,13 @@
     background: radial-gradient(ellipse 46% 40% at 50% 50%, rgba(247,241,231,.92), rgba(247,241,231,0));
   }
 
+  /* Fade-in on load: flag-wall.js holds the flags hidden until the logo
+     animation starts, then fades them in. Its FLAG_WALL_ANIMATE switch
+     turns this off. */
+  .flag-wall.is-fade-pending .flag-wall-grid img {
+    opacity: 0;
+  }
+
   /* Intro state, set by the head script only when the animation will play.
      The tagline rises in when the logo finishes, then the button and badge. */
   .intro .hero-logo-static {
@@ -738,6 +745,11 @@
     .pill:hover svg,
     .pill:focus-visible svg {
       transform: none;
+    }
+
+    .flag-wall .flag-wall-grid img {
+      opacity: 1 !important;
+      transition: none !important;
     }
   }
 </style>

@@ -51,6 +51,22 @@
   var INTRO_WAIT_MS = 4000;
   var RESIZE_DEBOUNCE_MS = 150;
 
+  /* FLAG_WALL_ANIMATE is the one switch for the fade-in on load. Set it to
+     false to keep the static wall with nothing else changed. The fade only
+     plays with the logo intro: never with reduced motion, never when the
+     intro is skipped or falls back, and never after a resize rebuild. */
+  var FLAG_WALL_ANIMATE = true;
+
+  /* Each flag fades in over FADE_MS (ease-out), starting in random order,
+     timed so the whole wall lands with the logo animation, which runs
+     74 frames at 29.97 fps (about 2.47 s). Opacity only, no movement. */
+  var FADE_MS = 600;
+  var FADE_TOTAL_MS = 2400;
+
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fadeActive = false;
+  var fadeTimer = null;
+
   var cols = 0;
   var rows = 0;
 
@@ -122,6 +138,11 @@
       return;
     }
 
+    /* After the first build, any change shows every flag at full strength. */
+    if (cols) {
+      stopFade();
+    }
+
     if (next.cols !== cols) {
       grid.textContent = '';
     }
@@ -143,6 +164,70 @@
     rows = next.rows;
   }
 
+  /* ---------- Fade-in on load ---------- */
+
+  /* Ends the fade, or cancels it before it starts: every flag shows at full
+     strength (the wall itself stays at its 10%). */
+  function stopFade() {
+    if (!fadeActive) {
+      return;
+    }
+    fadeActive = false;
+    window.clearTimeout(fadeTimer);
+    wall.classList.remove('is-fade-pending');
+    Array.prototype.forEach.call(grid.children, function (img) {
+      img.style.transition = '';
+    });
+  }
+
+  function fadeIn() {
+    var flags = Array.prototype.slice.call(grid.children);
+    var ranks = flags.map(function (flag, i) {
+      return i;
+    });
+    var spread = FADE_TOTAL_MS - FADE_MS;
+    var last = Math.max(1, flags.length - 1);
+
+    /* Random order, start times spread evenly across the spread. */
+    for (var i = ranks.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var swap = ranks[i];
+      ranks[i] = ranks[j];
+      ranks[j] = swap;
+    }
+
+    flags.forEach(function (img, k) {
+      img.style.transition = 'opacity ' + FADE_MS + 'ms ease-out ' + Math.round(ranks[k] / last * spread) + 'ms';
+    });
+
+    /* Commit the hidden state with the transitions in place, then let go. */
+    void grid.offsetWidth;
+    wall.classList.remove('is-fade-pending');
+    fadeTimer = window.setTimeout(stopFade, FADE_TOTAL_MS + 100);
+  }
+
+  /* The flags wait hidden until the logo animation starts playing (home.js
+     sets intro.started right before it plays). If the intro falls back to
+     the static logo instead, so does the wall. */
+  function watchIntro() {
+    (function check() {
+      if (!fadeActive) {
+        return;
+      }
+      if (intro.started) {
+        fadeIn();
+        return;
+      }
+      if (!root.classList.contains('intro')) {
+        stopFade();
+        return;
+      }
+      window.requestAnimationFrame(check);
+    })();
+  }
+
+  /* ---------- Start ---------- */
+
   function start() {
     var timer = null;
 
@@ -151,7 +236,16 @@
       timer = window.setTimeout(layout, RESIZE_DEBOUNCE_MS);
     }
 
+    if (FLAG_WALL_ANIMATE && !reduceMotion && intro && root.classList.contains('intro')) {
+      fadeActive = true;
+      wall.classList.add('is-fade-pending');
+    }
+
     layout();
+
+    if (fadeActive) {
+      watchIntro();
+    }
 
     if (window.ResizeObserver) {
       new window.ResizeObserver(schedule).observe(wall);
