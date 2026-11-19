@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/get", "destination": "/api/get" }
+    { "source": "/get", "destination": "/api/get" },
+    { "source": "/download", "destination": "/api/get" }
   ]
 }
