@@ -179,7 +179,7 @@
   /* ---------- Fade-in on load ---------- */
 
   /* Ends the fade, or cancels it before it starts: every flag shows at full
-     strength (the wall itself stays at its 5%). */
+     strength (the wall itself stays at its 8%). */
   function stopFade() {
     if (!fadeActive) {
       return;
