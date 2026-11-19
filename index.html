@@ -61,6 +61,7 @@
   })();
 </script>
 <script src="/assets/js/home.js" defer></script>
+<script src="/assets/js/flag-wall.js" defer></script>
 <link rel="preload" href="/assets/fonts/newsreader-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/fonts/fonts.css">
 <link rel="stylesheet" href="/assets/css/footer.css">
@@ -167,6 +168,57 @@
     .hero-badges {
       --badge-h: 56px;
     }
+  }
+
+  /* FLAG WALL: a faded wall of flags behind the opening, like the last frame
+     of the launch video. Decorative only. flag-wall.js fills the grid and
+     sets the column and row counts; without it the wall stays empty. The
+     hero isolates its stacking so the wall sits under the hero content
+     without the content needing a z-index of its own. */
+  .hero {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .flag-wall {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Equal gaps between flags and around the edge, 1.1% of the width (8px
+     minimum). Rows stretch to fill the hero height exactly, and the script
+     picks the row count that keeps each cell closest to 4:3. */
+  .flag-wall-grid {
+    --fw-gap: max(8px, 1.1vw);
+    display: grid;
+    grid-template-columns: repeat(var(--fw-cols, 12), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--fw-rows, 8), minmax(0, 1fr));
+    gap: var(--fw-gap);
+    height: 100%;
+    padding: var(--fw-gap);
+    opacity: .1;
+  }
+
+  .flag-wall-grid img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: clamp(6px, .7vw, 10px);
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* A soft wash of the page cream (#f7f1e7, the body background) over the
+     middle, so the logo, tagline, button and badges read as on plain cream. */
+  .flag-wall::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 46% 40% at 50% 50%, rgba(247,241,231,.92), rgba(247,241,231,0));
   }
 
   /* Intro state, set by the head script only when the animation will play.
@@ -694,6 +746,7 @@
 
 <!-- OPENING -->
 <header class="hero">
+  <div class="flag-wall" aria-hidden="true"><div class="flag-wall-grid"></div></div>
   <div class="hero-logo" role="img" aria-label="Menular">
     <img class="hero-logo-static" src="/assets/logo.svg" width="2249" height="560" alt="">
     <div class="hero-logo-anim"></div>
