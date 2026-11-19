@@ -57,11 +57,14 @@
      intro is skipped or falls back, and never after a resize rebuild. */
   var FLAG_WALL_ANIMATE = true;
 
-  /* Each flag fades in over FADE_MS (ease-out), starting in random order,
-     timed so the whole wall lands with the logo animation, which runs
-     74 frames at 29.97 fps (about 2.47 s). Opacity only, no movement. */
-  var FADE_MS = 600;
-  var FADE_TOTAL_MS = 2400;
+  /* Each flag fades in over FADE_MS (ease-out), starting in random order
+     when the logo animation starts. Slow version: the wall keeps filling in
+     after the rest of the hero has settled. From the logo's start, the logo
+     runs about 2.47 s (74 frames at 29.97 fps), the tagline has risen in by
+     about 3.4 s, and the button and badges by about 3.9 s; the last flag
+     lands at 5 s. Opacity only, no movement. */
+  var FADE_MS = 1200;
+  var FADE_TOTAL_MS = 5000;
 
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fadeActive = false;
